@@ -1,60 +1,123 @@
 {
-  "name":"Queries",
-  "id":"yWycIfrIDRDiV1OD1bHHS",
-  "items":[
-    {
-      "name":"Brim",
-      "items":[
-        {"name":"Activity Overview","description":"Shows a list of all Zeek streams in the data set, with a count of associated records","tags":[  "zeek",  "initial exploration"],"value":"count() by _path | sort -r","pins":[]},
-        {"name":"Conn_State REJ","value":"conn_state==\"REJ\" | cut conn_state, id.orig_h, id.resp_h | sort | uniq -c","pins":[]},
-        {"name":"Unique DNS Queries","description":"Shows all unique DNS queries in the data set with count","tags":[  "dns",  "initial exploration"],"value":"_path==\"dns\" | count() by query | sort -r","pins":[]},
-        {"name":"Windows Networking Activity","description":"Filters and displays smb_files, smb_mapping and DCE_RPC activity","tags":[  "windows",  "smb",  "malware"],"value":"_path matches smb* OR _path==\"dce_rpc\"","pins":[]},
-        {"name":"HTTP Requests","description":"Displays a list of the count of unique HTTP requests including source and destination","tags":[  "http",  "initial exploration",  "malware"],"value":"_path==\"http\" | cut id.orig_h, id.resp_h, id.resp_p, method, host, uri | uniq -c","pins":[]},
-        {"name":"Unique Network Connections","description":"Displays a table showing all unique source:port:destination connections pairings","tags":[  "network",  "initial exploration"],"value":"_path==\"conn\" | cut id.orig_h, id.resp_p, id.resp_h | sort | uniq","pins":[]},
-        {"name":"Connection Received Data","description":"Shows the connections between hosts, sorted by data received","tags":[  "network"],"value":"_path==\"conn\" | put total_bytes := orig_bytes + resp_bytes | sort -r total_bytes | cut uid, id, orig_bytes, resp_bytes, total_bytes","pins":[]},
-        {"name":"File Activity","description":"Displays a curated view of file data including md5 and sha1 for complete file transfers","tags":[  "files",  "malware"],"value":"filename!=null | cut _path, tx_hosts, rx_hosts, mime_type, filename, md5, sha1, conn_uids","pins":[]},
-        {"name":"File Activity - Count","value":"filename!=null | cut _path, filename, mime_type  | uniq -c","pins":[]},
-        {"name":"HTTP Post Requests","description":"Displays all HTTP Post requests including the URI and HTTP status code","tags":[  "http",  "malware"],"value":"method==\"POST\" | cut ts, uid, id, method, uri, status_code","pins":[]},
-        {"name":"Show IP Subnets","description":"Enumerates the classful networks for all destination IP addresses including count of connections","tags":[  "network"],"value":"_path==\"conn\" | put classnet := network_of(id.resp_h) | cut classnet | count() by classnet | sort -r","pins":[]},
-        {"name":"Suricata Alerts by Category","description":"Shows all Suricata alert counts by category and severity","tags":[  "suricata",  "malware"],"value":"event_type==\"alert\" | count() by alert.severity,alert.category | sort count","pins":[]},
-        {"name":"Suricata Alerts by Subnet","description":"Displays a list of Suricata alerts by CIDR network","tags":[  "suricata",  "malware"],"value":"event_type==\"alert\" | alerts := union(alert.category) by network_of(dest_ip)","pins":[]},
-        {"name":"Suricata Alerts by Source and Destination","description":"Shows all Suricata alerts in a list by unique source and destination IP addresses","tags":[  "suricata",  "malware"],"value":"event_type==\"alert\" | alerts := union(alert.category) by src_ip, dest_ip","pins":[]}
-      ],
-      "id":"PWzoZ-Fj-ipBREkIlQsFF",
-      "isOpen":false
-    },
-    {
-      "name":"Zeek Logs",
-      "id":"gTsQTyga1eJ-u_FR7Wa6I",
-      "items":[
-        {"name":"!OverView","value":"count() by _path | sort -r","pins":[]},
-        {"name":"capture_loss.log","value":"_path==\"capture_loss\"","pins":[]},
-        {"name":"Conn.Log","value":"_path==\"conn\"","pins":[]},
-        {"name":"dpd.log","value":"_path==\"dpd\"","pins":[]},
-        {"name":"dhcp.log","value":"_path==\"dhcp\"","pins":[]},
-        {"name":"dns.log","value":"_path==\"dns\" | sort -r | cut _path, id.orig_h, proto, query, answers, qtype_name","pins":[]},
-        {"name":"pe.log (Executable)","value":"_path==\"pe\"","pins":[]},
-        {"name":"files.log","value":"_path==\"files\"","pins":[]},
-        {"name":"ftp.log","value":"_path==\"ftp\"","pins":[]},
-        {"name":"http.log","value":"_path==\"http\"","pins":[]},
-        {"name":"irc.log","value":"_path==\"irc\"","pins":[]},
-        {"name":"kerberos.log","value":"_path==\"kerberos\"","pins":[]},
-        {"name":"notice.log","value":"_path==\"notice\"","pins":[]},
-        {"name":"ntlm.log","value":"_path==\"ntlm\"","pins":[]},
-        {"name":"ntp.log","value":"_path==\"ntp\"","pins":[]},
-        {"name":"rdp.log","value":"_path==\"rdp\"","pins":[]},
-        {"name":"reporter.log","value":"_path==\"reporter\"","pins":[]},
-        {"name":"ssl.log","value":"_path==\"ssl\"","pins":[]},
-        {"name":"smb.log","value":"_path==\"smb\"","pins":[]},
-        {"name":"smb_cmd.log","value":"_path==\"smb_cmd\"","pins":[]},
-        {"name":"smb_files.log","value":"_path==\"smb_files\"","pins":[]},
-        {"name":"smb_mapping.log","value":"_path==\"smb_mapping\"","pins":[]},
-        {"name":"smtp.log","value":"_path==\"smtp\"","pins":[]},
-        {"name":"stats.log","value":"_path==\"stats\"","pins":[]},
-        {"name":"tunnel.log","value":"_path==\"tunnel\"","pins":[]},
-        {"name":"x509.log","value":"_path==\"x509\"","pins":[]},
-        {"name":"weird.log","value":"_path==\"weird\"","pins":[]}
-      ]
-    }
-  ]
+	"name":"Queries",
+	"id":"OEmIZudjh0Ezi_KlnGC9w",
+	"items":[
+		{
+			"name":"Brim-Default",
+			"items":[
+				{ "name":"Activity Overview",
+					"description":"Shows a list of all Zeek streams in the data set, with a count of associated records",
+					"tags":[
+						"zeek",
+						"initial exploration"
+					], "value":"count() by _path | sort -r"},
+				{ "name":"Conn_State REJ", "value":"conn_state==\"REJ\" | cut conn_state, id.orig_h, id.resp_h | sort | uniq -c"},
+				{ "name":"Unique DNS Queries",
+					"description":"Shows all unique DNS queries in the data set with count",
+					"tags":[
+						"dns",
+						"initial exploration"
+					], "value":"_path==\"dns\" | count() by query | sort -r"},
+				{ "name":"Windows Networking Activity",
+					"description":"Filters and displays smb_files, smb_mapping and DCE_RPC activity",
+					"tags":[
+						"windows",
+						"smb",
+						"malware"
+					], "value":"_path matches smb* OR _path==\"dce_rpc\""},
+				{ "name":"HTTP Requests",
+					"description":"Displays a list of the count of unique HTTP requests including source and destination",
+					"tags":[
+						"http",
+						"initial exploration",
+						"malware"
+					], "value":"_path==\"http\" | cut id.orig_h, id.resp_h, id.resp_p, method, host, uri | uniq -c"},
+				{ "name":"Unique Network Connections",
+					"description":"Displays a table showing all unique source:port:destination connections pairings",
+					"tags":[
+						"network",
+						"initial exploration"
+					], "value":"_path==\"conn\" | cut id.orig_h, id.resp_p, id.resp_h | sort | uniq"},
+				{ "name":"Connection Received Data",
+					"description":"Shows the connections between hosts, sorted by data received",
+					"tags":[
+						"network"
+					], "value":"_path==\"conn\" | put total_bytes := orig_bytes + resp_bytes | sort -r total_bytes | cut uid, id, orig_bytes, resp_bytes, total_bytes"},
+				{ "name":"File Activity",
+					"description":"Displays a curated view of file data including md5 and sha1 for complete file transfers",
+					"tags":[
+						"files",
+						"malware"
+					], "value":"filename!=null | cut _path, tx_hosts, rx_hosts, mime_type, filename, md5, sha1, conn_uids"},
+				{ "name":"File Activity - Count", "value":"filename!=null | cut _path, filename, mime_type  | uniq -c"},
+				{ "name":"HTTP Post Requests",
+					"description":"Displays all HTTP Post requests including the URI and HTTP status code",
+					"tags":[
+						"http",
+						"malware"
+					], "value":"method==\"POST\" | cut ts, uid, id, method, uri, status_code"},
+				{ "name":"Show IP Subnets",
+					"description":"Enumerates the classful networks for all destination IP addresses including count of connections",
+					"tags":[
+						"network"
+					], "value":"_path==\"conn\" | put classnet := network_of(id.resp_h) | cut classnet | count() by classnet | sort -r"},
+				{ "name":"Suricata Alerts by Category",
+					"description":"Shows all Suricata alert counts by category and severity",
+					"tags":[
+						"suricata",
+						"malware"
+					], "value":"event_type==\"alert\" | count() by alert.severity,alert.category | sort count"},
+				{ "name":"Suricata Alerts by Subnet",
+					"description":"Displays a list of Suricata alerts by CIDR network",
+					"tags":[
+						"suricata",
+						"malware"
+					], "value":"event_type==\"alert\" | alerts := union(alert.category) by network_of(dest_ip)"},
+				{ "name":"Suricata Alerts by Source and Destination",
+					"description":"Shows all Suricata alerts in a list by unique source and destination IP addresses",
+					"tags":[
+						"suricata",
+						"malware"
+					], "value":"event_type==\"alert\" | alerts := union(alert.category) by src_ip, dest_ip"}
+			],
+			"id":"Chd5oobq_WGxYX7EgMSAC",
+			"isOpen":false
+		},
+		{
+			"name":"Zeek Logs",
+			"id":"RGVIernSjDqE-efDaUq8G",
+			"items":[
+				{ "name":"!OverView", "value":"count() by _path | sort -r"},
+				{ "name":"capture_loss.log", "value":"_path==\"capture_loss\""},
+				{ "name":"conn.Log", "value":"_path==\"conn\""},
+				{ "name":"dce_rpc.log", "value":"_path==\"dce_rpc\" | count() by named_pipe | sort -r"},
+				{ "name":"dpd.log", "value":"_path==\"dpd\""},
+				{ "name":"dhcp.log", "value":"_path==\"dhcp\""},
+				{ "name":"dns.log", "value":"_path==\"dns\" | sort -r | cut _path, id.orig_h, proto, query, answers, qtype_name"},
+				{ "name":"pe.log (Executable)", "value":"_path==\"pe\""},
+				{ "name":"files.log", "value":"_path==\"files\""},
+				{ "name":"ftp.log", "value":"_path==\"ftp\""},
+				{ "name":"http.log", "value":"_path==\"http\""},
+				{ "name":"irc.log", "value":"_path==\"irc\""},
+				{ "name":"kerberos.log", "value":"_path==\"kerberos\""},
+				{ "name":"notice.log", "value":"_path==\"notice\""},
+				{ "name":"ntlm.log", "value":"_path==\"ntlm\""},
+				{ "name":"ntp.log", "value":"_path==\"ntp\""},
+				{ "name":"rdp.log", "value":"_path==\"rdp\""},
+				{ "name":"reporter.log", "value":"_path==\"reporter\""},
+				{ "name":"ssl.log", "value":"_path==\"ssl\""},
+				{ "name":"smb.log", "value":"_path==\"smb\""},
+				{ "name":"smb_cmd.log", "value":"_path==\"smb_cmd\""},
+				{ "name":"smb_files.log", "value":"_path==\"smb_files\""},
+				{ "name":"smb_mapping.log", "value":"_path==\"smb_mapping\""},
+				{ "name":"smtp.log", "value":"_path==\"smtp\""},
+				{ "name":"stats.log", "value":"_path==\"stats\""},
+				{ "name":"tunnel.log", "value":"_path==\"tunnel\""},
+				{ "name":"x509.log", "value":"_path==\"x509\""},
+				{ "name":"weird.log", "value":"_path==\"weird\""}
+			],
+			"isOpen":false
+		}
+	],
+	"isOpen":false
 }
