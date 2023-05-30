@@ -97,7 +97,7 @@
 				{ "name":"pe.log (Executable)", "value":"_path==\"pe\""},
 				{ "name":"files.log", "value":"_path==\"files\""},
 				{ "name":"ftp.log", "value":"_path==\"ftp\""},
-				{ "name":"http.log", "value":"_path==\"http\""},
+				{ "name":"http.log", "value":"_path==\"http\" | cut uid, response_body_len, referrer, method, uri, resp_mime_types, resp_fuids"},
 				{ "name":"irc.log", "value":"_path==\"irc\""},
 				{ "name":"kerberos.log", "value":"_path==\"kerberos\""},
 				{ "name":"notice.log", "value":"_path==\"notice\""},
